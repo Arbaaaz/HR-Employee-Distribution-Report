@@ -1,0 +1,116 @@
+drop table human_resource
+
+create table human_resource
+(
+id varchar(255),
+	first_name varchar(255),
+	last_name varchar(255),
+birthdate varchar(255),
+	gender varchar(255),
+	race varchar(255),
+	department varchar(255),
+	jobtitle varchar(255),
+	location varchar(255),
+	hire_date varchar(255),
+	term_date varchar(255), 
+	location_city varchar(255),
+	location_state varchar(255)
+)
+
+select * from human_resource
+
+ALTER TABLE human_resource RENAME TO hr
+
+ALTER TABLE hr RENAME COLUMN id TO emp_id
+
+-displaying complete table where there is null values in particular table:
+
+SELECT * FROM hr 
+WHERE term_date IS NULL;
+
+-counting null values in particular table:
+
+SELECT count(*) as null_value FROM hr 
+WHERE term_date IS NULL;
+
+-displaying particular columns where there is null values in particular table:
+
+SELECT 
+  gender,
+  COALESCE(term_date, 'NULL') AS term_date,
+  location
+FROM hr;
+
+
+-to update the birthdate format, we run this:
+
+UPDATE hr
+SET birthdate = CASE
+    WHEN birthdate LIKE '%/%' THEN TO_DATE(birthdate, 'MM/DD/YYYY')
+    WHEN birthdate LIKE '%-%' THEN TO_DATE(birthdate, 'MM-DD-YYYY')
+    ELSE NULL
+END;
+
+
+-for searching any value use this type of query:
+(here, we searched 1998 in birthdate table, which gave output of all birthdate having year 1998)
+
+SELECT birthdate
+FROM hr
+WHERE birthdate LIKE '%1998%';
+
+
+-change column name from term_date to termdate
+
+ALTER TABLE hr
+rename column term_date to termdate;
+
+-change column name from hire_date to hiredate
+ALTER TABLE hr
+rename column hire_date to hiredate;
+
+
+-changing the existing date time format into proper format only where, the rows are not null and have no space in them:
+
+UPDATE hr
+SET termdate = to_timestamp(termdate, 'YYYY-MM-DD HH24:MI:SS UTC')
+WHERE termdate IS NOT NULL AND termdate != ' ';
+
+- add new column 'age' as int data type:
+
+ALTER TABLE hr ADD COLUMN age INT;
+
+-alter the birthdate data type from varchar into date:
+
+ALTER TABLE hr
+ALTER COLUMN birthdate TYPE DATE
+USING TO_DATE(birthdate, 'YYYY-MM-DD');
+
+
+-update this age column by extracting date from birthdate column and filling it with age numbers:
+
+UPDATE hr
+SET age = EXTRACT(YEAR FROM AGE(CURRENT_DATE, birthdate));
+
+
+-now we need to proper the hiredate column, so that the format will be uniform (just like birthdate as above):
+
+UPDATE hr
+SET birthdate = CASE
+    WHEN hiredate LIKE '%/%' THEN TO_DATE(hiredate, 'MM/DD/YYYY')
+    WHEN hiredate LIKE '%-%' THEN TO_DATE(hiredate, 'MM-DD-YYYY')
+    ELSE NULL
+END;
+
+
+-changing the data type of hiredate to date data type from varchar :
+
+ALTER TABLE hr
+ALTER COLUMN hiredate TYPE DATE
+USING TO_DATE(hiredate, 'YYYY-MM-DD');
+
+
+
+
+
+
